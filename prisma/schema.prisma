@@ -1,0 +1,93 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider          = "mysql"
+    url               = env("DATABASE_URL")
+    shadowDatabaseUrl = env("DATABASE_SHADOW_URL")
+}
+
+model Trainer {
+    id           String           @id @default(uuid())
+    username     String           @unique
+    passwordHash String
+    createdAt    DateTime         @default(now())
+    team         TrainerPokemon[]
+    badges       Badge[]
+}
+
+model TrainerPokemon {
+    id          String   @id @default(uuid())
+    trainerId   String
+    speciesId   Int
+    speciesName String
+    nickname    String?
+    level       Int
+    createdAt   DateTime @default(now())
+    trainer     Trainer  @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+
+    @@index([trainerId])
+}
+
+model Badge {
+    id         String   @id @default(uuid())
+    trainerId  String
+    gymId      String
+    gymName    String?
+    acquiredAt DateTime @default(now())
+
+    trainer Trainer @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+    gym     Gym     @relation(fields: [gymId], references: [id], onDelete: Cascade)
+
+    @@unique([trainerId, gymId])
+    @@index([trainerId])
+    @@index([gymId])
+}
+
+model Gym {
+    id              String   @id @db.VarChar(255)
+    pokeapiLocation String?  @db.VarChar(255)
+    leader          String?  @db.VarChar(255)
+    location        String?  @db.VarChar(255)
+    name            String?  @db.VarChar(255)
+    region          String?  @db.VarChar(255)
+    badge           String?  @db.VarChar(255)
+    hasBadge        Boolean?
+    locationValid   Boolean?
+
+    teamMembers GymTeamMember[]
+    Badge       Badge[]
+
+    @@map("Gym")
+}
+
+model GymTeamMember {
+    id                 String   @id @db.VarChar(255)
+    gymId              String?  @db.VarChar(255)
+    generation         Int?
+    gameVersion        String?  @db.VarChar(255)
+    speciesName        String?  @db.VarChar(255)
+    level              Int?
+    speciesId          Int?
+    pokeapiVersion     String?  @db.VarChar(255)
+    pokeapiSpeciesName String?  @db.VarChar(255)
+    speciesSingleValid Boolean?
+
+    gym   Gym?                 @relation(fields: [gymId], references: [id], onDelete: Cascade)
+    moves GymTeamMemberMoves[] @relation("MemberMoves")
+
+    @@index([gymId])
+    @@map("GymTeamMember")
+}
+
+model GymTeamMemberMoves {
+    id              String  @id @db.VarChar(255)
+    gymTeamMemberId String? @db.VarChar(255)
+    move            String? @db.VarChar(255)
+
+    member GymTeamMember? @relation(name: "MemberMoves", fields: [gymTeamMemberId], references: [id], onDelete: Cascade)
+
+    @@index([gymTeamMemberId])
+    @@map("GymTeamMemberMoves")
+}
