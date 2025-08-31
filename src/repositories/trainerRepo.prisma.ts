@@ -151,7 +151,8 @@ export const trainerRepo = {
                 id: true,
                 trainerId: true,
                 gymName: true,
-                acquiredAt: true
+                acquiredAt: true,
+                gymId: true,
             },
         });
 
@@ -174,7 +175,8 @@ export const trainerRepo = {
                 id: true,
                 trainerId: true,
                 gymName: true,
-                acquiredAt: true
+                acquiredAt: true,
+                gymId: true,
             },
         });
 

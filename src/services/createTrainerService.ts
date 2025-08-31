@@ -1,7 +1,9 @@
+import { TrainerPokemon, TeamSummary } from '../types';
+
 interface TrainerServiceDeps {
     trainerRepo: any;
     getSpeciesSummary: (species: string | number) => Promise<any>;
-    getTeamDerivedSummary: (team: any[]) => Promise<any>;
+    getTeamDerivedSummary: (team: TeamSummary[]) => Promise<any>;
 }
 
 export function createTrainerService({
@@ -16,7 +18,7 @@ export function createTrainerService({
 
             if (level < 1 || level > 100) throw new Error('Level must be between 1 and 100');
 
-            const team = await trainerRepo.listTeam(trainerId);
+            const team: TrainerPokemon[] = await trainerRepo.listTeam(trainerId);
 
             if (team.length >= 6) throw new Error('Team is full (max 6)');
 
@@ -28,9 +30,9 @@ export function createTrainerService({
 
         async listMyTeamWithDerived(trainerId: string) {
 
-            const team = await trainerRepo.listTeam(trainerId);
+            const team: TrainerPokemon[] = await trainerRepo.listTeam(trainerId);
 
-            const base = team.map(t => ({
+            const base: TeamSummary[] = team.map((t) => ({
                 speciesId: t.speciesId,
                 speciesName: t.speciesName,
                 level: t.level,
@@ -74,7 +76,7 @@ export function createTrainerService({
         async myProfile(trainerId: string) {
 
             const trainer = await trainerRepo.getById(trainerId);
-            
+
             if (!trainer) throw new Error('Trainer not found');
 
             const badges = await trainerRepo.listBadges(trainerId);

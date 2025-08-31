@@ -25,8 +25,6 @@ export interface SpeciesSummary {
 export function createPokeApiService({ cache, timeoutMs = 12000 }: PokeApiServiceDeps) {
 
     async function fetchPokemonRaw(nameOrId: string | number) {
-
-        console.log('[fetchPokemonRaw]', nameOrId);
         
         const cacheKey = `poke:${nameOrId}`;
 
@@ -45,8 +43,6 @@ export function createPokeApiService({ cache, timeoutMs = 12000 }: PokeApiServic
     }
 
     async function getSpeciesSummary(nameOrId: string | number): Promise<SpeciesSummary> {
-
-        console.log('[fetchPokemonRaw]', nameOrId);
 
         const raw = await fetchPokemonRaw(nameOrId);
 
