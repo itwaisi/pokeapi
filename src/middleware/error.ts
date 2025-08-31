@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { env } from '../config/env';
 
 
 export function errorHandler(err: any, _req: Request, res: Response, _next: NextFunction) {
@@ -7,8 +8,8 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
 
     const message = err.message || 'Something went wrong';
     
-    if (process.env.NODE_ENV !== 'test') {
-        console.error('[ERROR]', status, message);
+    if (env.NODE_ENV !== 'test') {
+        console.error('[ERROR] ::', _req.method, _req.path, status, message);
     }
     
     res.status(status).json({ error: message });

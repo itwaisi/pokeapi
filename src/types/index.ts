@@ -15,6 +15,8 @@ export interface TrainerPokemon {
     createdAt: string;
 }
 
+export type TeamSummary = Pick<TrainerPokemon, 'speciesId' | 'speciesName' | 'level'>;
+
 export interface Badge {
     id: string;
     trainerId: string;
