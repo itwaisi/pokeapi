@@ -62,15 +62,38 @@ Please provide:
 
 ## Environment Variables
 
-You need a `.env` file in the root of the project with at least the following:
+A `.env.example` file is provided in the project root with all required variables.
 
-```shell
-API_JWT_SECRET=your_jwt_secret
-API_PORT=3000
-DATABASE_URL=mysql://user:password@host:port/database
+Create your local `.env` by copying it and then editing values for your machine:
+
+```bash
+cp .env.example .env
 ```
 
-> Replace values as appropriate for your environment.
+| Variable                 | Description                                          | Example                                                        |
+|--------------------------|------------------------------------------------------|----------------------------------------------------------------|
+| `NODE_ENV`               | Node.js environment mode                             | `development`                                                  |
+| `API_HOST`               | Host address the API binds to                        | `localhost`                                                    |
+| `API_PORT`               | Port the API listens on                              | `3000`                                                         |
+| `API_JWT_SECRET`         | Secret key for signing JWTs                          | `CHANGE_ME!`                                                   |
+| `API_CACHE_TTL_SECONDS`  | Cache time-to-live in seconds                        | `600`                                                          |
+| `DATABASE_DRIVER`        | Database driver                                      | `mysql`                                                        |
+| `DATABASE_ROOT_USER`     | Root database username                               | `root`                                                         |
+| `DATABASE_ROOT_PASSWORD` | Root database password                               | `root`                                                         |
+| `DATABASE_USER`          | Application database user                            | `app_user`                                                     |
+| `DATABASE_PASSWORD`      | Application database password                        | `app_password`                                                 |
+| `DATABASE_HOST`          | Database host                                        | `localhost`                                                    |
+| `DATABASE_PORT`          | Database port (via Docker)                           | `3306`                                                         |
+| `DATABASE_NAME`          | Database name                                        | `pokeapi_db`                                                   |
+| `DATABASE_URL`           | Connection string for the application database       | `mysql://app_user:app_password@localhost:3306/pokeapi_db`      |
+| `DATABASE_SHADOW_URL`    | Connection string for the Prisma shadow database     | `mysql://root:root@localhost:3306/pokeapi_db_shadow`           |
+| `ADMINER_PORT`           | Adminer UI Port (via Docker)                         | `8080`                                                         |
+
+Notes:
+
+- `DATABASE_URL` is used by the app and Prisma migrations.
+- `DATABASE_SHADOW_URL` is used by Prisma to safely apply migrations (shadow DB must be reachable).
+- `ADMINER_PORT` lets you customize which local port Adminer runs on (default `8080`). If 8080 is in use, set `ADMINER_PORT=9090` and access Adminer at `http://localhost:9090`.
 
 ## NPM Scripts
 
@@ -105,3 +128,26 @@ npm run prisma:generate
 # RUN DEVELOPMENT SERVER
 npm run dev
 ```
+
+To stop and reset containers and volumes (destroys data):
+
+```bash
+npm run docker:reset
+```
+
+## Swagger API Docs
+
+Swagger documentation is served automatically when the app is running.
+
+Default URL: `http://localhost:3000/docs`
+
+## Docker Container Access
+
+Adminer is setup with Docker and provides a web-based SQL client to inspect and manage your database.
+
+- URL: `http://localhost:${ADMINER_PORT}` (default `http://localhost:8080`)
+- System: `MySQL`
+- Server: `mysql` (the service name from docker-compose)
+- Username: use `DATABASE_ROOT_USER` or `DATABASE_USER` from `.env`
+- Password: use matching `DATABASE_ROOT_PASSWORD` or `DATABASE_PASSWORD`
+- Database: `pokeapi_db` (or value of `DATABASE_NAME`)
