@@ -3,13 +3,12 @@ generator client {
 }
 
 datasource db {
-    provider          = "mysql"
-    url               = env("DATABASE_URL")
-    shadowDatabaseUrl = env("DATABASE_SHADOW_URL")
+    provider = "mysql"
+    url      = env("DATABASE_URL")
 }
 
 model Trainer {
-    id           String           @id @default(uuid())
+    id           String           @id @default(uuid()) @db.VarChar(255)
     username     String           @unique
     passwordHash String
     createdAt    DateTime         @default(now())
@@ -18,8 +17,8 @@ model Trainer {
 }
 
 model TrainerPokemon {
-    id          String   @id @default(uuid())
-    trainerId   String
+    id          String   @id @default(uuid()) @db.VarChar(255)
+    trainerId   String   @db.VarChar(255)
     speciesId   Int
     speciesName String
     nickname    String?
@@ -31,18 +30,18 @@ model TrainerPokemon {
 }
 
 model Badge {
-    id         String   @id @default(uuid())
-    trainerId  String
-    gymId      String
-    gymName    String?
+    id         String   @id @default(uuid()) @db.VarChar(255)
+    trainerId  String   @db.VarChar(255)
+    gymId      String   @db.VarChar(255)
+    gymName    String?  @db.VarChar(255)
     acquiredAt DateTime @default(now())
 
     trainer Trainer @relation(fields: [trainerId], references: [id], onDelete: Cascade)
     gym     Gym     @relation(fields: [gymId], references: [id], onDelete: Cascade)
 
-    @@unique([trainerId, gymId])
+    @@unique([trainerId, gymId], map: "Badge_trainerId_gymId_key")
+    @@index([gymId], map: "Badge_gymId_idx")
     @@index([trainerId])
-    @@index([gymId])
 }
 
 model Gym {
@@ -75,7 +74,7 @@ model GymTeamMember {
     speciesSingleValid Boolean?
 
     gym   Gym?                 @relation(fields: [gymId], references: [id], onDelete: Cascade)
-    moves GymTeamMemberMoves[] @relation("MemberMoves")
+    moves GymTeamMemberMoves[]
 
     @@index([gymId])
     @@map("GymTeamMember")
@@ -86,8 +85,8 @@ model GymTeamMemberMoves {
     gymTeamMemberId String? @db.VarChar(255)
     move            String? @db.VarChar(255)
 
-    member GymTeamMember? @relation(name: "MemberMoves", fields: [gymTeamMemberId], references: [id], onDelete: Cascade)
+    gymTeamMember GymTeamMember? @relation(fields: [gymTeamMemberId], references: [id], onDelete: Cascade)
 
-    @@index([gymTeamMemberId])
+    @@index([gymTeamMemberId], map: "GymTeamMemberMoves_gymTeamMemberId_idx")
     @@map("GymTeamMemberMoves")
 }

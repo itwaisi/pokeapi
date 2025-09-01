@@ -6,7 +6,7 @@ export const swaggerSpec = swaggerJSDoc({
         openapi: '3.0.0',
         info: {
             title: 'PokeAPI Backend',
-            version: '0.0.2'
+            version: '0.0.3'
         },
         components: {
             securitySchemes: {
